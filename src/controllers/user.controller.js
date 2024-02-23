@@ -178,11 +178,36 @@ const updateAvatar = AsyncHandler(async (req, res) => {
 
 })
 
+const getUserForSidebar = AsyncHandler(async (req, res) => {
+
+    try {
+        const loggedInUser = req.user._id
+
+        const allusers = await User.find({
+            _id: { $ne: loggedInUser }
+        }).select("-password")
+
+        if (!allusers) {
+            throw new ApiError(500, "Something went wrong")
+        }
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, allusers )
+            )
+    } catch (error) {
+        console.log(error);
+        throw new ApiError(500, "Internal server error")
+    }
+})
+
 
 export {
     userRegister,
     userLogin,
     userLogout,
     changeUserPassword,
-    updateAvatar
+    updateAvatar,
+    getUserForSidebar
 }

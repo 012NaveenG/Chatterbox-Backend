@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
     changeUserPassword,
+    getUserForSidebar,
     updateAvatar,
     userLogin,
     userLogout,
@@ -23,5 +24,6 @@ router.route('/register').post(upload.fields(
 router.route('/changepassword').post(verifyJWT, changeUserPassword)
 router.route('/logout').post(verifyJWT, userLogout)
 router.route('/updateavatar').post(verifyJWT, updateAvatar)
+router.route('/contacts').get(verifyJWT,getUserForSidebar)
 
 export default router

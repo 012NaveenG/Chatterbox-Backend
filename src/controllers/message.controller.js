@@ -34,7 +34,8 @@ const sendMessage = AsyncHandler(async (req, res) => {
 
         if (!newMessage) throw new ApiError(500, "Message not sent, Please try again...")
 
-        conversation.messages.push(newMessage) 
+        conversation.messages.push(newMessage)
+        await conversation.save()
 
         return res
             .status(200)
@@ -49,7 +50,33 @@ const sendMessage = AsyncHandler(async (req, res) => {
 
 })
 
+const getMessage = AsyncHandler(async (req, res) => {
+
+    try {
+        const userToChatId = req.params.id
+        const senderId = req.user._id
+
+        const conversation = await Conversation.findOne({
+            participants: { $all: [userToChatId, senderId] }
+        }).populate("messages")
+
+        if (!conversation) throw new ApiError(404, "No chats found..")
+
+        const message = conversation.messages
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, message, "converesation found successfully..")
+            )
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong fetching messages")
+    }
+
+})
+
 
 export {
-    sendMessage
+    sendMessage,
+    getMessage
 }
